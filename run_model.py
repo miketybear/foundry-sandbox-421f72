@@ -1,8 +1,28 @@
+import os
+
+from dotenv import load_dotenv
 from openai import OpenAI
 
-endpoint = "https://bd-foundry-bpm.services.ai.azure.com/openai/v1"
-deployment_name = "gpt-6-luna"
-api_key = "<api-key>"
+load_dotenv()
+
+endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+api_key = os.getenv("AZURE_OPENAI_API_KEY")
+
+missing_settings = [
+    name
+    for name, value in (
+        ("AZURE_OPENAI_ENDPOINT", endpoint),
+        ("AZURE_OPENAI_DEPLOYMENT", deployment_name),
+        ("AZURE_OPENAI_API_KEY", api_key),
+    )
+    if not value
+]
+if missing_settings:
+    raise ValueError(
+        f"Missing required settings: {', '.join(missing_settings)}. "
+        "Set them in .env or the environment."
+    )
 
 client = OpenAI(
     base_url=endpoint,
